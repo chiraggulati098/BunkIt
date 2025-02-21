@@ -186,6 +186,15 @@ struct SubjectsListView: View {
                     },
                     saveSubjects: saveSubjects
                 )}
+            
+            
+            Section {
+                Text("Created with ❤️ by Chirag")
+                    .font(.footnote)
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 5)
+            }
         }
     }
 }
