@@ -57,14 +57,12 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                         .padding()
                 } else {
-                    List {
-                        ForEach(subjects.indices, id: \.self) { index in
-                            SubjectRow(subject: $subjects[index]) {
-                                selectedSubjectIndex = index
-                                showActionSheet = true
-                            }
-                        }
-                    }
+                    SubjectsListView(
+                        subjects: $subjects,
+                        selectedSubjectIndex: $selectedSubjectIndex,
+                        showActionSheet: $showActionSheet,
+                        saveSubjects: saveSubjects
+                    )
                 }
             }
             .navigationTitle("BunkIt")
@@ -171,9 +169,31 @@ struct ContentView: View {
     }
 }
 
+struct SubjectsListView: View {
+    @Binding var subjects: [Subject]
+    @Binding var selectedSubjectIndex: Int?
+    @Binding var showActionSheet: Bool
+    var saveSubjects: () -> Void
+    
+    var body: some View {
+        List {
+            ForEach(subjects.indices, id: \.self) { index in
+                SubjectRow(
+                    subject: $subjects[index],
+                    onLongPress: {
+                        selectedSubjectIndex = index
+                        showActionSheet = true
+                    },
+                    saveSubjects: saveSubjects
+                )}
+        }
+    }
+}
+
 struct SubjectRow: View {
     @Binding var subject: Subject
     var onLongPress: () -> Void
+    var saveSubjects: () -> Void
 
     var body: some View {
         HStack {
@@ -198,6 +218,7 @@ struct SubjectRow: View {
                 Button(action: {
                     subject.attended += 1
                     subject.total += 1
+                    saveSubjects()
                 }) {
                     Image(systemName: "plus.circle.fill")
                         .foregroundColor(.green)
@@ -207,6 +228,7 @@ struct SubjectRow: View {
                 
                 Button(action: {
                     subject.total += 1
+                    saveSubjects()
                 }) {
                     Image(systemName: "minus.circle.fill")
                         .foregroundColor(.red)
